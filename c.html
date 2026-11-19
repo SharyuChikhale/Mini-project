@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<title>SpendSense - Smart Expense Manager</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap');
+
+:root {
+  --purple:#7665ed;
+  --purple-dark:#5946cb;
+  --purple-light:#f0edff;
+  --green:#20b58a;
+  --red:#e76c83;
+  --orange:#f0a45c;
+  --blue:#5797e8;
+  --pink:#e47e9a;
+  --navy:#222442;
+  --muted:#898da6;
+  --bg:#f7f7fc;
+  --white:#fff;
+  --border:#eceaf5;
+  --shadow:0 12px 35px rgba(75,61,150,.08);
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:'DM Sans',sans-serif;
+  background:
+    radial-gradient(circle at 90% 5%,#eae5ff 0,transparent 25%),
+    radial-gradient(circle at 5% 90%,#e2f8f1 0,transparent 25%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--navy);
+}
+button,input,select { font:inherit; }
+button { cursor:pointer; }
+.hidden { display:none!important; }
+@keyframes appear {
+  from {opacity:0;transform:translateY(18px)}
+  to {opacity:1;transform:translateY(0)}
+}
+@keyframes float {
+  0%,100% {transform:translateY(0)}
+  50% {transform:translateY(-12px)}
+}
+@keyframes shimmer {
+  from {transform:translateX(-100%)}
+  to {transform:translateX(100%)}
+}
+@keyframes spin {
+  to {transform:rotate(360deg)}
+}
+@keyframes pop {
+  from {transform:scale(.95);opacity:0}
+  to {transform:scale(1);opacity:1}
+}
+#authScreen {
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  background:white;
+}
+.auth-left {
+  background:
+    radial-gradient(circle at 80% 20%,rgba(190,165,255,.4),transparent 30%),
+    radial-gradient(circle at 10% 90%,rgba(68,219,184,.25),transparent 35%),
+    linear-gradient(145deg,#7563ec,#3d368f);
+  padding:55px;
+  color:white;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  overflow:hidden;
+  position:relative;
+}
+.auth-left:after {
+  content:"";
+  position:absolute;
+  width:300px;
+  height:300px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:50%;
+  right:-100px;
+  bottom:-100px;
+  box-shadow:0 0 0 35px rgba(255,255,255,.04),
+             0 0 0 70px rgba(255,255,255,.03);
+  animation:float 8s ease-in-out infinite;
+}
+.brand {
+  font-family:'Manrope',sans-serif;
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:-1px;
+}
+.brand span { color:#b9afff; }
+.auth-left h1 {
+  font-family:'Manrope',sans-serif;
+  font-size:clamp(36px,5vw,56px);
+  line-height:1.15;
+  max-width:490px;
+  margin:0 0 20px;
+}
+.auth-left p {
+  color:#e4e0ff;
+  line-height:1.8;
+  max-width:420px;
+}
+.auth-illustration {
+  font-size:75px;
+  animation:float 4s ease-in-out infinite;
+  margin:25px 0;
+}
+.auth-right {
+  display:grid;
+  place-items:center;
+  padding:30px;
+}
+.auth-box {
+  width:min(100%,390px);
+  animation:appear .7s ease;
+}
+.auth-box h2 {
+  font-family:'Manrope',sans-serif;
+  font-size:29px;
+  margin:0 0 8px;
+}
+.subtext {
+  color:var(--muted);
+  margin:0 0 28px;
+  font-size:14px;
+}
+.field {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:17px;
+}
+.field label {
+  font-size:13px;
+  font-weight:700;
+}
+.field input,.field select {
+  padding:13px 14px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  outline:none;
+  background:#fbfaff;
+  color:var(--navy);
+  width:100%;
+  transition:.2s;
+}
+.field input:focus,.field select:focus {
+  border-color:var(--purple);
+  box-shadow:0 0 0 4px rgba(118,101,237,.12);
+  background:white;
+}
+.primary-btn {
+  border:none;
+  border-radius:11px;
+  background:linear-gradient(110deg,#7662eb,#a184f4);
+  box-shadow:0 7px 18px rgba(118,98,235,.22);
+  color:white;
+  padding:14px 18px;
+  font-weight:700;
+  width:100%;
+  transition:.25s;
+}
+.primary-btn:hover {
+  transform:translateY(-3px);
+  box-shadow:0 12px 25px rgba(118,98,235,.3);
+}
+.switch-auth {
+  text-align:center;
+  font-size:13px;
+  color:var(--muted);
+  margin-top:20px;
+}
+.switch-auth button {
+  border:0;
+  background:none;
+  color:var(--purple);
+  font-weight:800;
+}
+.demo-note {
+  font-size:10px;
+  color:#aaa;
+  text-align:center;
+  margin-top:25px;
+  line-height:1.6;
+}
+#appScreen {
+  display:flex;
+  min-height:100vh;
+}
+.sidebar {
+  width:245px;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(15px);
+  border-right:1px solid var(--border);
+  padding:27px 18px;
+  position:fixed;
+  inset:0 auto 0 0;
+  display:flex;
+  flex-direction:column;
+  z-index:10;
+}
+.sidebar .brand {
+  padding:0 12px 38px;
+  color:#5143b9;
+}
+.sidebar .brand span { color:#a18df8; }
+.nav-label {
+  font-size:10px;
+  color:#aaa4c9;
+  font-weight:800;
+  letter-spacing:2px;
+  padding:0 12px;
+  margin-bottom:12px;
+}
+.nav-btn {
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:13px 12px;
+  border-radius:12px;
+  color:#81869e;
+  border:0;
+  background:transparent;
+  width:100%;
+  text-align:left;
+  margin-bottom:6px;
+  font-weight:600;
+  font-size:13px;
+  transition:.25s;
+}
+.nav-btn:hover {
+  background:var(--purple-light);
+  color:var(--purple);
+  transform:translateX(4px);
+}
+.nav-btn.active {
+  background:linear-gradient(110deg,#7865ed,#9c83f5);
+  color:white;
+  box-shadow:0 7px 18px rgba(120,101,237,.25);
+}
+.nav-icon {
+  font-size:18px;
+  width:23px;
+  text-align:center;
+}
+.sidebar-bottom { margin-top:auto; }
+.main {
+  margin-left:245px;
+  width:calc(100% - 245px);
+  padding:30px 35px 55px;
+  max-width:1600px;
+}
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:30px;
+  gap:15px;
+}
+.topbar h1 {
+  font-family:'Manrope',sans-serif;
+  font-size:26px;
+  margin:0 0 5px;
+  letter-spacing:-.7px;
+}
+.topbar p {
+  margin:0;
+  color:var(--muted);
+  font-size:13px;
+}
+.user-pill {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:30px;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:700;
+}
+.avatar {
+  background:linear-gradient(135deg,#7665ed,#a78cf4);
+  color:white;
+  border-radius:50%;
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  font-weight:800;
+}
+.page { display:none; }
+.page.active { display:block;animation:appear .35s ease; }
+.grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+.card {
+  background:white;
+  border:1px solid rgba(224,220,245,.8);
+  border-radius:19px;
+  padding:20px;
+  box-shadow:var(--shadow);
+  min-width:0;
+  transition:transform .3s,box-shadow .3s;
+  animation:appear .55s ease both;
+}
+.card:hover {
+  transform:translateY(-5px);
+  box-shadow:0 18px 40px rgba(75,61,150,.13);
+}
+.stat-icon {
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  font-size:20px;
+  margin-bottom:14px;
+  transition:.3s;
+}
+.card:hover .stat-icon {
+  transform:rotate(-8deg) scale(1.12);
+}
+
+.icon-purple {background:#eeeaff}
+.icon-pink {background:#ffe9ed}
+.icon-green {background:#e1f8ef}
+.icon-orange {background:#fff0dc}
+.icon-blue {background:#e8f0ff}
+
+.stat-label {
+  font-size:12px;
+  color:var(--muted);
+  font-weight:600;
+}
+
+.stat-value {
+  font-family:'Manrope',sans-serif;
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:-1px;
+  margin:13px 0 5px;
+  overflow-wrap:anywhere;
+}
+
+.stat-note {color:var(--muted);font-size:11px}
+.green {color:var(--green)!important}
+.red {color:var(--red)!important}
+
+/* SECTIONS */
+
+.section-title {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin:29px 0 15px;
+}
+
+.section-title h2 {
+  font-size:17px;
+  margin:0;
+}
+
+.section-title p {
+  color:var(--muted);
+  font-size:12px;
+  margin:5px 0 0;
+}
+
+.two-col {
+  display:grid;
+  grid-template-columns:1.3fr 1fr;
+  gap:17px;
+}
+
+.card h3 {font-size:15px;margin:0 0 6px}
+.card-description {font-size:12px;color:var(--muted);margin:0 0 20px}
+
+/* BUTTONS */
+
+.small-btn {
+  border:1px solid var(--border);
+  background:white;
+  padding:9px 13px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:700;
+  color:var(--navy);
+  transition:.2s;
+}
+
+.small-btn:hover {
+  background:var(--purple-light);
+  border-color:#c8baff;
+  color:var(--purple);
+  transform:translateY(-2px);
+}
+
+.delete-btn {
+  background:#fff0f2;
+  color:var(--red);
+  border:0;
+  border-radius:8px;
+  padding:7px 10px;
+  font-size:11px;
+  font-weight:700;
+  transition:.2s;
+}
+
+.delete-btn:hover {background:#ffe0e6;transform:scale(1.04)}
+
+/* BUDGET */
+
+.progress-track {
+  height:11px;
+  background:#eeecf7;
+  border-radius:30px;
+  overflow:hidden;
+  margin:13px 0;
+}
+
+.progress-fill {
+  height:100%;
+  background:linear-gradient(90deg,#7662eb,#a88af7,#6dcdb5);
+  border-radius:30px;
+  position:relative;
+  transition:width 1s cubic-bezier(.2,.8,.2,1);
+}
+
+.progress-fill:after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);
+  animation:shimmer 2.5s infinite;
+}
+
+.budget-line {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* CATEGORIES */
+
+.category-row {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:14px 0;
+  padding:8px;
+  border-radius:10px;
+  transition:background .2s;
+}
+
+.category-row:hover {background:#f8f7ff}
+
+.category-dot {
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+
+.category-name {flex:1;font-size:12px;font-weight:600}
+.category-amount {font-size:12px;font-weight:700}
+
+.category-track {
+  width:80px;
+  height:8px;
+  background:#f0eff8;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.category-track div {
+  height:100%;
+  border-radius:20px;
+  transition:width .8s ease;
+}
+
+/* INSIGHTS */
+
+.insight {
+  background:linear-gradient(120deg,#eeeaff,#e9f8f5);
+  border:1px solid #e5defe;
+  border-radius:16px;
+  padding:19px;
+  color:#5549a0;
+  font-size:13px;
+  line-height:1.7;
+  box-shadow:0 7px 20px rgba(105,88,180,.06);
+  transition:.3s;
+}
+
+.insight:hover {transform:translateY(-3px)}
+.insight strong {
+  display:block;
+  margin-bottom:6px;
+  color:#6652c7;
+  font-size:14px;
+}
+
+/* TABLE */
+
+.table-wrap {overflow-x:auto}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  min-width:500px;
+}
+
+th {
+  text-align:left;
+  padding:13px 10px;
+  color:#9994b3;
+  font-weight:700;
+  font-size:10px;
+  letter-spacing:.7px;
+  border-bottom:1px solid var(--border);
+}
+
+td {
+  padding:14px 10px;
+  border-bottom:1px solid #f0eef8;
+}
+
+tbody tr:hover {background:#f8f6ff}
+
+.empty {
+  text-align:center;
+  padding:35px 15px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* FORMS */
+
+.form-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0 14px;
+}
+
+.full {grid-column:1/-1}
+
+/* REPORT CHART */
+
+.chart-bars {
+  display:flex;
+  align-items:end;
+  gap:12px;
+  height:195px;
+  padding-top:15px;
+  overflow-x:auto;
+}
+
+.month-bar {
+  flex:1;
+  min-width:30px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  height:100%;
+  justify-content:end;
+  gap:8px;
+}
+
+.bar-track {
+  width:100%;
+  height:130px;
+  background:#f0edff;
+  border-radius:9px 9px 0 0;
+  display:flex;
+  align-items:end;
+  overflow:hidden;
+}
+
+.bar-fill {
+  width:100%;
+  min-height:2px;
+  background:linear-gradient(180deg,#aa94fa,#6c58df);
+  border-radius:9px 9px 0 0;
+  transition:height .7s ease;
+}
+
+.month-bar:hover .bar-fill {
+  background:linear-gradient(180deg,#7ddcc3,#27b28b);
+}
+
+.month-bar span {font-size:10px;color:var(--muted)}
+.month-bar small {font-size:9px;color:var(--muted)}
+
+/* SAVINGS GOALS */
+
+.goal-item {
+  background:linear-gradient(145deg,#fff,#faf8ff);
+}
+
+.goal-item h3 {
+  color:#5e4fc0;
+  font-size:17px;
+}
+
+.goal-item .progress-fill {
+  background:linear-gradient(90deg,#27b58b,#77d6b3);
+}
+
+/* NOTICES */
+
+.notice {
+  background:#fff8e8;
+  color:#946b20;
+  padding:12px;
+  border-radius:9px;
+  font-size:12px;
+  margin-bottom:15px;
+}
+
+/* MOBILE */
+
+@media(max-width:1050px) {
+  .grid {grid-template-columns:repeat(2,1fr)}
+  .two-col {grid-template-columns:1fr}
+}
+
+@media(max-width:700px) {
+  #authScreen {grid-template-columns:1fr}
+  .auth-left {display:none}
+  .auth-right {min-height:100vh}
+
+  .sidebar {
+    width:100%;
+    height:auto;
+    inset:auto 0 0 0;
+    padding:7px 4px;
+    border-top:1px solid var(--border);
+    flex-direction:row;
+    justify-content:space-around;
+    box-shadow:0 -5px 20px rgba(50,40,100,.06);
+  }
+
+  .sidebar .brand,.nav-label,.sidebar-bottom {display:none}
+  .sidebar nav {
+    display:flex;
+    width:100%;
+    justify-content:space-around;
+  }
+
+  .nav-btn {
+    width:auto;
+    flex-direction:column;
+    gap:4px;
+    padding:9px 6px;
+    font-size:9px;
+    margin:0;
+  }
+
+  .nav-btn:hover {transform:none}
+
+  .main {
+    margin-left:0;
+    width:100%;
+    padding:22px 14px 100px;
+  }
+
+  .grid {gap:10px}
+  .card {padding:14px}
+  .stat-value {font-size:19px}
+  .topbar h1 {font-size:21px}
+  .topbar {align-items:flex-start}
+  .user-pill {font-size:10px;padding:6px}
+  .form-grid {grid-template-columns:1fr}
+  .full {grid-column:auto}
+  .section-title {margin-top:23px}
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= LOGIN ================= -->
+
+<section id="authScreen">
+
+  <div class="auth-left">
+    <div class="brand">Spend<span>Sense.</span></div>
+
+    <div>
+      <div class="auth-illustration">💸</div>
+      <h1>Make every rupee count.</h1>
+      <p>
+        Track your expenses, understand your spending habits,
+        and reach your financial goals with SpendSense.
+      </p>
+    </div>
+
+    <p>Smart money management. A brighter financial future.</p>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-box">
+
+      <h2 id="authTitle">Create your account</h2>
+      <p class="subtext" id="authSubtitle">
+        Start your smarter money journey.
+      </p>
+
+      <form id="authForm">
+
+        <div class="field" id="nameField">
+          <label>Your name</label>
+          <input id="userName" placeholder="Enter your name">
+        </div>
+
+        <div class="field">
+          <label>Email address</label>
+          <input id="userEmail" type="email" required placeholder="you@example.com">
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <input id="userPassword" type="password" required minlength="4" placeholder="Enter password">
+        </div>
+
+        <button class="primary-btn" id="authSubmit">Create account</button>
+
+      </form>
+
+      <div class="switch-auth">
+        <span id="switchText">Already have an account?</span>
+        <button id="switchAuth" type="button">Log in</button>
+      </div>
+
+      <p class="demo-note">
+        Student hackathon prototype. Data is stored locally in this browser.
+        Do not enter real passwords or sensitive financial information.
+      </p>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= APPLICATION ================= -->
+
+<section id="appScreen" class="hidden">
+
+  <aside class="sidebar">
+
+    <div class="brand">Spend<span>Sense.</span></div>
+
+    <div style="width:100%">
+      <div class="nav-label">MAIN MENU</div>
+
+      <nav>
+        <button class="nav-btn active" data-page="dashboard">
+          <span class="nav-icon">⌂</span>Dashboard
+        </button>
+
+        <button class="nav-btn" data-page="transactions">
+          <span class="nav-icon">↗</span>Expenses
+        </button>
+
+        <button class="nav-btn" data-page="budget">
+          <span class="nav-icon">◉</span>Budget
+        </button>
+
+        <button class="nav-btn" data-page="reports">
+          <span class="nav-icon">▥</span>Reports
+        </button>
+
+        <button class="nav-btn" data-page="goals">
+          <span class="nav-icon">☆</span>Goals
+        </button>
+      </nav>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="nav-btn" id="logoutBtn">
+        <span class="nav-icon">↪</span>Log out
+      </button>
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+      <div>
+        <h1 id="pageHeading">Dashboard</h1>
+        <p id="welcomeText">Here is your financial overview.</p>
+      </div>
+
+      <div class="user-pill">
+        <div class="avatar" id="avatar">U</div>
+        <span id="displayName">User</span>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+
+    <section class="page active" id="dashboard">
+
+      <div class="grid">
+
+        <div class="card">
+          <div class="stat-icon icon-purple">💰</div>
+          <div class="stat-label">Monthly Income</div>
+          <div class="stat-value" id="dashIncome">₹0</div>
+          <div class="stat-note">Your planned income</div>
+        </div>
+
+        <div class="card">
+          <div class="stat-icon icon-pink">💳</div>
+          <div class="stat-label">Total Expenses</div>
+          <div class="stat-value" id="dashExpenses">₹0</div>
+          <div class="stat-note">Recorded spending</div>
+        </div>
+
+        <div class="card">
+          <div class="stat-icon icon-green">📊</div>
+          <div class="stat-label">Budget Remaining</div>
+          <div class="stat-value green" id="dashRemaining">₹0</div>
+          <div class="stat-note">Monthly budget minus expenses</div>
+        </div>
+
+        <div class="card">
+          <div class="stat-icon icon-orange">🌱</div>
+          <div class="stat-label">Estimated Savings</div>
+          <div class="stat-value green" id="dashSavings">₹0</div>
+          <div class="stat-note">Income minus expenses</div>
+        </div>
+
+      </div>
+
+      <div class="two-col">
+
+        <div>
+
+          <div class="section-title">
+            <div>
+              <h2>Monthly budget</h2>
+              <p>Your spending against your planned budget.</p>
+            </div>
+            <button class="small-btn" onclick="showPage('budget')">Edit budget</button>
+          </div>
+
+          <div class="card">
+
+            <div class="budget-line">
+              <span>Budget used</span>
+              <strong id="budgetPercent">0%</strong>
+            </div>
+
+            <div class="progress-track">
+              <div class="progress-fill" id="budgetProgress"></div>
+            </div>
+
+            <div class="budget-line">
+              <span id="budgetSpent">₹0 spent</span>
+              <strong id="budgetTotal">₹0 budget</strong>
+            </div>
+
+            <div class="insight" style="margin-top:20px" id="budgetMessage">
+              Add expenses to start tracking your budget.
+            </div>
+
+          </div>
+
+          <div class="section-title">
+            <div>
+              <h2>Recent expenses</h2>
+              <p>Your latest transactions.</p>
+            </div>
+            <button class="small-btn" onclick="showPage('transactions')">View all</button>
+          </div>
+
+          <div class="card table-wrap">
+
+            <table>
+              <thead>
+                <tr>
+                  <th>DESCRIPTION</th>
+                  <th>CATEGORY</th>
+                  <th>DATE</th>
+                  <th>AMOUNT</th>
+                </tr>
+              </thead>
+              <tbody id="recentTable"></tbody>
+            </table>
+
+            <div id="recentEmpty" class="empty">
+              No expenses added yet.
+            </div>
+
+          </div>
+
+        </div>
+
+        <div>
+
+          <div class="section-title">
+            <div>
+              <h2>Expense breakdown</h2>
+              <p>Where your money is going.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div id="categoryBreakdown"></div>
+          </div>
+
+          <div class="section-title">
+            <div>
+              <h2>SpendSense insights</h2>
+              <p>Your spending summary.</p>
+            </div>
+          </div>
+
+          <div class="insight" id="smartInsight">
+            <strong>✦ Your spending assistant</strong>
+            Add expenses to receive useful spending insights.
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPENSES -->
+
+    <section class="page" id="transactions">
+
+      <div class="section-title">
+        <div>
+          <h2>Add a new expense</h2>
+          <p>Tell SpendSense where you spent your money.</p>
+        </div>
+      </div>
+
+      <div class="card">
+
+        <form id="expenseForm">
+
+          <div class="form-grid">
+
+            <div class="field">
+              <label>Expense description</label>
+              <input id="expenseName" required placeholder="e.g. Lunch, bus ticket, books">
+            </div>
+
+            <div class="field">
+              <label>Amount (₹)</label>
+              <input id="expenseAmount" type="number" min="0.01" step="0.01" required placeholder="Enter amount">
+            </div>
+
+            <div class="field">
+              <label>Category</label>
+              <select id="expenseCategory" required>
+                <option value="Food">🍔 Food</option>
+                <option value="Shopping">🛍 Shopping</option>
+                <option value="Transport">🚌 Transport</option>
+                <option value="Education">📚 Education</option>
+                <option value="Entertainment">🎬 Entertainment</option>
+                <option value="Bills">🧾 Bills</option>
+                <option value="Health">💊 Health</option>
+                <option value="Other">✨ Other</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Date</label>
+              <input id="expenseDate" type="date" required>
+            </div>
+
+            <div class="field full">
+              <button class="primary-btn" type="submit">+ Add expense</button>
+            </div>
+
+          </div>
+
+        </form>
+      </div>
+
+      <div class="section-title">
+        <div>
+          <h2>All transactions</h2>
+          <p>Manage your recorded expenses.</p>
+        </div>
+      </div>
+
+      <div class="card table-wrap">
+
+        <table>
+          <thead>
+            <tr>
+              <th>DESCRIPTION</th>
+              <th>CATEGORY</th>
+              <th>DATE</th>
+              <th>AMOUNT</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="allTransactions"></tbody>
+        </table>
+
+        <div id="allEmpty" class="empty">
+          Your transactions will appear here.
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- BUDGET -->
+
+    <section class="page" id="budget">
+
+      <div class="section-title">
+        <div>
+          <h2>Plan your monthly finances</h2>
+          <p>Set your monthly income and spending budget.</p>
+        </div>
+      </div>
+
+      <div class="card">
+
+        <form id="budgetForm">
+
+          <div class="form-grid">
+
+            <div class="field">
+              <label>Monthly income (₹)</label>
+              <input id="incomeInput" type="number" min="0" step="0.01" required placeholder="e.g. 15000">
+            </div>
+
+            <div class="field">
+              <label>Monthly spending budget (₹)</label>
+              <input id="budgetInput" type="number" min="0" step="0.01" required placeholder="e.g. 10000">
+            </div>
+
+            <div class="field full">
+              <button class="primary-btn" type="submit">Save monthly plan</button>
+            </div>
+
+          </div>
+
+        </form>
+      </div>
+      <div class="section-title">
+        <div>
+          <h2>Category-wise spending</h2>
+          <p>See how your expenses are divided.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div id="budgetCategories"></div>
+      </div>
+    </section>
+    <section class="page" id="reports">
+      <div class="section-title">
+        <div>
+          <h2>Monthly and yearly reports</h2>
+          <p>Understand your financial progress over time.</p>
+        </div>
+        <select id="reportYear" class="small-btn"></select>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="stat-icon icon-purple">💰</div>
+          <div class="stat-label">Yearly income</div>
+          <div class="stat-value" id="yearIncome">₹0</div>
+        </div>
+        <div class="card">
+          <div class="stat-icon icon-pink">💸</div>
+          <div class="stat-label">Yearly expenses</div>
+          <div class="stat-value" id="yearExpenses">₹0</div>
+        </div>
+        <div class="card">
+          <div class="stat-icon icon-green">🌱</div>
+          <div class="stat-label">Estimated yearly savings</div>
+          <div class="stat-value green" id="yearSavings">₹0</div>
+        </div>
+        <div class="card">
+          <div class="stat-icon icon-blue">📈</div>
+          <div class="stat-label">Average monthly expenses</div>
+          <div class="stat-value" id="avgExpenses">₹0</div>
+        </div>
+      </div>
+      <div class="section-title">
+        <div>
+          <h2>Monthly expense comparison</h2>
+          <p>Compare spending throughout the selected year.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div id="monthlyChart" class="chart-bars"></div>
+      </div>
+      <div class="section-title">
+        <div>
+          <h2>Monthly financial summary</h2>
+          <p>Income, expenses and estimated savings.</p>
+        </div>
+      </div>
+      <div class="card table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>MONTH</th>
+              <th>INCOME</th>
+              <th>EXPENSES</th>
+              <th>ESTIMATED SAVINGS</th>
+            </tr>
+          </thead>
+          <tbody id="yearTable"></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="page" id="goals">
+      <div class="section-title">
+        <div>
+          <h2>Your savings goals</h2>
+          <p>Give your savings a purpose and track your progress.</p>
+        </div>
+      </div>
+      <div class="card">
+        <form id="goalForm">
+          <div class="form-grid">
+            <div class="field">
+              <label>Goal name</label>
+              <input id="goalName" required placeholder="e.g. Buy a laptop">
+            </div>
+            <div class="field">
+              <label>Target amount (₹)</label>
+              <input id="goalTarget" type="number" min="1" step="0.01" required placeholder="e.g. 50000">
+            </div>
+            <div class="field">
+              <label>Amount saved already (₹)</label>
+              <input id="goalSaved" type="number" min="0" step="0.01" value="0">
+            </div>
+            <div class="field">
+              <label>Target date</label>
+              <input id="goalDate" type="date">
+            </div>
+            <div class="field full">
+              <button class="primary-btn" type="submit">+ Create savings goal</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="section-title">
+        <div>
+          <h2>Your goals</h2>
+          <p>Track your progress towards each target.</p>
+        </div>
+      </div>
+      <div class="grid" id="goalList"></div>
+      <div id="goalEmpty" class="empty">You haven't created a savings goal yet.</div>
+    </section>
+  </main>
+</section>
+<script>
+const $ = id => document.getElementById(id);
+const categories = [
+  "Food","Shopping","Transport","Education",
+  "Entertainment","Bills","Health","Other"
+];
+const colors = {
+  Food:"#7665ed",
+  Shopping:"#f0a45c",
+  Transport:"#20b58a",
+  Education:"#5797e8",
+  Entertainment:"#e47e9a",
+  Bills:"#9b8adf",
+  Health:"#58ad70",
+  Other:"#a0a9b8"
+};
+let users = JSON.parse(localStorage.getItem("ss_users") || "{}");
+let currentEmail = localStorage.getItem("ss_currentUser") || "";
+let data = null;
+let isSignup = true;
+function money(value) {
+  return "₹" + Number(value || 0).toLocaleString("en-IN",{
+    maximumFractionDigits:2
+  });
+}
+function today() {
+  const d = new Date();
+  return [
+    d.getFullYear(),
+    String(d.getMonth()+1).padStart(2,"0"),
+    String(d.getDate()).padStart(2,"0")
+  ].join("-");
+}
+function monthKey(date) {
+  return date.slice(0,7);
+}
+function currentMonth() {
+  return today().slice(0,7);
+}
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g,c=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[c]);
+}
+function blankData() {
+  return {
+    transactions:[],
+    budgets:{},
+    goals:[]
+  };
+}
+function saveUsers() {
+  localStorage.setItem("ss_users",JSON.stringify(users));
+}
+function saveData() {
+  if(!currentEmail || !data) return;
+  users[currentEmail].data=data;
+  saveUsers();
+}
+function getMonthSettings(key) {
+  return data.budgets[key] || {income:0,budget:0};
+}
+function getMonthExpenses(key) {
+  return data.transactions
+    .filter(t=>monthKey(t.date)===key)
+    .reduce((sum,t)=>sum+Number(t.amount),0);
+}
+function getMonthIncome(key) {
+  return Number(getMonthSettings(key).income || 0);
+}
+function getMonthBudget(key) {
+  return Number(getMonthSettings(key).budget || 0);
+}
+function showAuth(signup) {
+  isSignup=signup;
+  $("authTitle").textContent=signup
+    ?"Create your account"
+    :"Welcome back!";
+  $("authSubtitle").textContent=signup
+    ?"Start your smarter money journey."
+    :"Log in to continue to your dashboard.";
+  $("nameField").classList.toggle("hidden",!signup);
+  $("authSubmit").textContent=signup
+    ?"Create account"
+    :"Log in";
+  $("switchText").textContent=signup
+    ?"Already have an account?"
+    :"Don't have an account?";
+  $("switchAuth").textContent=signup
+    ?"Log in"
+    :"Sign up";
+}
+$("switchAuth").addEventListener("click",()=>showAuth(!isSignup));
+$("authForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const email=$("userEmail").value.trim().toLowerCase();
+  const password=$("userPassword").value;
+  const name=$("userName").value.trim();
+  if(isSignup) {
+    if(!name) return alert("Please enter your name.");
+    if(users[email]) {
+      return alert("An account with this email already exists.");
+    }
+    users[email]={
+      name,
+      password,
+      data:blankData()
+    };
+  } else {
+    if(!users[email] || users[email].password!==password) {
+      return alert("Incorrect email or password.");
+    }
+  }
+  currentEmail=email;
+  localStorage.setItem("ss_currentUser",email);
+  saveUsers();
+  openApp();
+});
+function openApp() {
+  if(!users[currentEmail]) {
+    logout();
+    return;
+  }
+  data=users[currentEmail].data || blankData();
+  $("authScreen").classList.add("hidden");
+  $("appScreen").classList.remove("hidden");
+  $("displayName").textContent=users[currentEmail].name;
+  $("avatar").textContent=users[currentEmail].name.charAt(0).toUpperCase();
+  $("expenseDate").value=today();
+  const settings=getMonthSettings(currentMonth());
+  $("incomeInput").value=settings.income || "";
+  $("budgetInput").value=settings.budget || "";
+  renderAll();
+  if(!settings.income && !settings.budget) {
+    showPage("budget");
+    $("welcomeText").textContent="First, set up your monthly income and budget.";
+  } else {
+    $("welcomeText").textContent="Here is your financial overview.";
+  }
+}
+function logout() {
+  currentEmail="";
+  data=null;
+  localStorage.removeItem("ss_currentUser");
+  $("appScreen").classList.add("hidden");
+  $("authScreen").classList.remove("hidden");
+  $("authForm").reset();
+  showAuth(false);
+}
+$("logoutBtn").addEventListener("click",logout);
+const pageNames={
+  dashboard:"Dashboard",
+  transactions:"Expenses",
+  budget:"Budget planner",
+  reports:"Financial reports",
+  goals:"Savings goals"
+};
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  $(page).classList.add("active");
+  document.querySelectorAll(".nav-btn[data-page]").forEach(btn=>{
+    btn.classList.toggle("active",btn.dataset.page===page);
+  });
+  $("pageHeading").textContent=pageNames[page];
+  if(page==="budget") {
+    const s=getMonthSettings(currentMonth());
+    $("incomeInput").value=s.income || "";
+    $("budgetInput").value=s.budget || "";
+    renderBudgetCategories();
+  }
+  if(page==="reports") renderReports();
+  if(page==="goals") renderGoals();
+}
+document.querySelectorAll(".nav-btn[data-page]").forEach(btn=>{
+  btn.addEventListener("click",()=>showPage(btn.dataset.page));
+});
+$("budgetForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const income=Number($("incomeInput").value);
+  const budget=Number($("budgetInput").value);
+  if(!Number.isFinite(income)||!Number.isFinite(budget)||income<0||budget<0) {
+    return alert("Please enter valid amounts.");
+  }
+  data.budgets[currentMonth()]={income,budget};
+  saveData();
+  renderAll();
+  alert("Your monthly financial plan has been saved!");
+  showPage("dashboard");
+});
+$("expenseForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const name=$("expenseName").value.trim();
+  const amount=Number($("expenseAmount").value);
+  const category=$("expenseCategory").value;
+  const date=$("expenseDate").value;
+  if(!name||!Number.isFinite(amount)||amount<=0||!date) {
+    return alert("Please enter valid expense details.");
+  }
+  data.transactions.push({
+    id:Date.now(),
+    name,
+    amount,
+    category,
+    date
+  });
+  saveData();
+  $("expenseForm").reset();
+  $("expenseDate").value=today();
+  renderAll();
+  alert("Expense added successfully!");
+});
+function deleteExpense(id) {
+  if(!confirm("Delete this expense?")) return;
+  data.transactions=data.transactions.filter(t=>t.id!==id);
+  saveData();
+  renderAll();
+}
+function categoryTotals(key) {
+  const totals={};
+  categories.forEach(c=>totals[c]=0);
+  data.transactions
+    .filter(t=>monthKey(t.date)===key)
+    .forEach(t=>{
+      totals[t.category]=(totals[t.category]||0)+Number(t.amount);
+    });
+  return totals;
+}
+function renderDashboard() {
+  const key=currentMonth();
+  const settings=getMonthSettings(key);
+  const expenses=getMonthExpenses(key);
+  const income=Number(settings.income||0);
+  const budget=Number(settings.budget||0);
+  const remaining=budget-expenses;
+  const savings=income-expenses;
+  const percent=budget>0?expenses/budget*100:0;
+  $("dashIncome").textContent=money(income);
+  $("dashExpenses").textContent=money(expenses);
+  $("dashRemaining").textContent=money(remaining);
+  $("dashSavings").textContent=money(savings);
+  $("dashRemaining").className="stat-value "+(remaining<0?"red":"green");
+  $("dashSavings").className="stat-value "+(savings<0?"red":"green");
+  $("budgetPercent").textContent=Math.round(percent)+"%";
+  $("budgetProgress").style.width=Math.min(percent,100)+"%";
+  $("budgetSpent").textContent=money(expenses)+" spent";
+  $("budgetTotal").textContent=money(budget)+" budget";
+  if(budget<=0) {
+    $("budgetMessage").textContent="Set a monthly budget to start tracking your spending.";
+  } else if(remaining<0) {
+    $("budgetMessage").textContent=
+      "You have exceeded your monthly budget by "+money(Math.abs(remaining))+". Review your expenses.";
+  } else {
+    $("budgetMessage").textContent=
+      "You have "+money(remaining)+" remaining in your monthly spending budget.";
+  }
+  renderCategoryBreakdown();
+  renderRecent();
+  renderInsight();
+}
+function renderCategoryBreakdown() {
+  const totals=categoryTotals(currentMonth());
+  const total=Object.values(totals).reduce((a,b)=>a+b,0);
+  const used=categories.filter(c=>totals[c]>0);
+  if(!used.length) {
+    $("categoryBreakdown").innerHTML=
+      '<div class="empty">Add expenses to see your category breakdown.</div>';
+    return;
+  }
+  $("categoryBreakdown").innerHTML=used
+    .sort((a,b)=>totals[b]-totals[a])
+    .map(c=>`
+      <div class="category-row">
+        <div class="category-dot" style="background:${colors[c]}"></div>
+        <div class="category-name">${c}</div>
+        <div class="category-track">
+          <div style="width:${totals[c]/total*100}%;background:${colors[c]}"></div>
+        </div>
+        <div class="category-amount">${money(totals[c])}</div>
+      </div>
+    `).join("");
+}
+function renderRecent() {
+  const list=data.transactions
+    .slice()
+    .sort((a,b)=>b.date.localeCompare(a.date))
+    .slice(0,5);
+  $("recentTable").innerHTML=list.map(t=>`
+    <tr>
+      <td>${escapeHTML(t.name)}</td>
+      <td>${escapeHTML(t.category)}</td>
+      <td>${t.date}</td>
+      <td><strong>${money(t.amount)}</strong></td>
+    </tr>
+  `).join("");
+  $("recentEmpty").classList.toggle("hidden",list.length>0);
+}
+function renderInsight() {
+  const totals=categoryTotals(currentMonth());
+  const entries=Object.entries(totals).filter(x=>x[1]>0);
+  const total=getMonthExpenses(currentMonth());
+  const budget=getMonthBudget(currentMonth());
+  if(!entries.length) {
+    $("smartInsight").innerHTML=
+      "<strong>✦ Your spending assistant</strong>Add some expenses to receive a spending summary.";
+    return;
+  }
+  entries.sort((a,b)=>b[1]-a[1]);
+  const highest=entries[0];
+  let message="Your highest spending category is "+highest[0]+
+    " at "+money(highest[1])+".";
+  if(budget>0) {
+    const percent=total/budget*100;
+    if(percent>100) {
+      message+=" Your expenses are above your planned budget. Review your spending.";
+    } else if(percent>=80) {
+      message+=" You have used more than 80% of your monthly budget.";
+    } else {
+      message+=" Your spending is currently within your planned budget.";
+    }
+  } else {
+    message+=" Set a budget to see how your spending compares with your plan.";
+  }
+  $("smartInsight").innerHTML=
+    "<strong>✦ Your SpendSense insight</strong>"+escapeHTML(message);
+}
+
+function renderTransactions() {
+  const list=data.transactions
+    .slice()
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  $("allTransactions").innerHTML=list.map(t=>`
+    <tr>
+      <td>${escapeHTML(t.name)}</td>
+      <td>${escapeHTML(t.category)}</td>
+      <td>${t.date}</td>
+      <td><strong>${money(t.amount)}</strong></td>
+      <td>
+        <button class="delete-btn" onclick="deleteExpense(${t.id})">Delete</button>
+      </td>
+    </tr>
+  `).join("");
+  $("allEmpty").classList.toggle("hidden",list.length>0);
+}
+
+function renderBudgetCategories() {
+  const totals=categoryTotals(currentMonth());
+  const total=getMonthExpenses(currentMonth());
+  $("budgetCategories").innerHTML=categories.map(c=>{
+    const amount=totals[c];
+    const percent=total>0?amount/total*100:0;
+    return `
+      <div class="category-row">
+        <div class="category-dot" style="background:${colors[c]}"></div>
+        <div class="category-name">${c}</div>
+        <div class="category-track" style="width:35%">
+          <div style="width:${percent}%;background:${colors[c]}"></div>
+        </div>
+        <div class="category-amount">${money(amount)}</div>
+      </div>
+    `;
+  }).join("");
+}
+function renderReports() {
+  const years=new Set([String(new Date().getFullYear())]);
+  data.transactions.forEach(t=>years.add(t.date.slice(0,4)));
+  Object.keys(data.budgets).forEach(k=>years.add(k.slice(0,4)));
+  const sortedYears=[...years].sort().reverse();
+  const selector=$("reportYear");
+  const previous=selector.value;
+  selector.innerHTML=sortedYears.map(y=>
+    `<option value="${y}">${y}</option>`
+  ).join("");
+  selector.value=sortedYears.includes(previous)
+    ?previous
+    :String(new Date().getFullYear());
+  const year=selector.value;
+  let totalIncome=0;
+  let totalExpenses=0;
+  let monthsWithData=0;
+  const monthData=[];
+  for(let i=0;i<12;i++) {
+    const key=year+"-"+String(i+1).padStart(2,"0");
+    const income=getMonthIncome(key);
+    const expenses=getMonthExpenses(key);
+    const savings=income-expenses;
+    totalIncome+=income;
+    totalExpenses+=expenses;
+    if(income||expenses) monthsWithData++;
+    monthData.push({
+      name:new Date(Number(year),i,1).toLocaleString("en",{month:"short"}),
+      income,
+      expenses,
+      savings
+    });
+  }
+  $("yearIncome").textContent=money(totalIncome);
+  $("yearExpenses").textContent=money(totalExpenses);
+  $("yearSavings").textContent=money(totalIncome-totalExpenses);
+  $("yearSavings").className=
+    "stat-value "+(totalIncome-totalExpenses<0?"red":"green");
+  $("avgExpenses").textContent=
+    money(monthsWithData?totalExpenses/monthsWithData:0);
+  const max=Math.max(...monthData.map(m=>m.expenses),1);
+  $("monthlyChart").innerHTML=monthData.map(m=>`
+    <div class="month-bar">
+      <small>${m.expenses?money(m.expenses):"—"}</small>
+      <div class="bar-track">
+        <div class="bar-fill" style="height:${m.expenses/max*100}%"></div>
+      </div>
+      <span>${m.name}</span>
+    </div>
+  `).join("");
+  $("yearTable").innerHTML=monthData.map(m=>`
+    <tr>
+      <td>${m.name}</td>
+      <td>${money(m.income)}</td>
+      <td>${money(m.expenses)}</td>
+      <td class="${m.savings<0?"red":"green"}">
+        <strong>${money(m.savings)}</strong>
+      </td>
+    </tr>
+  `).join("");
+}
+$("reportYear").addEventListener("change",renderReports);
+$("goalForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const name=$("goalName").value.trim();
+  const target=Number($("goalTarget").value);
+  const saved=Number($("goalSaved").value);
+  const date=$("goalDate").value;
+  if(!name||!Number.isFinite(target)||target<=0||
+     !Number.isFinite(saved)||saved<0) {
+    return alert("Please enter valid goal details.");
+  }
+  data.goals.push({
+    id:Date.now(),
+    name,
+    target,
+    saved,
+    date
+  });
+  saveData();
+  $("goalForm").reset();
+  $("goalSaved").value=0;
+  renderGoals();
+  alert("Your savings goal has been created!");
+});
+function updateGoal(id) {
+  const goal=data.goals.find(g=>g.id===id);
+  if(!goal) return;
+  const amount=prompt("Enter your total amount saved:",goal.saved);
+  if(amount===null) return;
+  const value=Number(amount);
+  if(!Number.isFinite(value)||value<0) {
+    return alert("Please enter a valid amount.");
+  }
+  goal.saved=value;
+  saveData();
+  renderGoals();
+}
+function deleteGoal(id) {
+  if(!confirm("Delete this savings goal?")) return;
+  data.goals=data.goals.filter(g=>g.id!==id);
+  saveData();
+  renderGoals();
+}
+function renderGoals() {
+  const goals=data.goals||[];
+  $("goalEmpty").classList.toggle("hidden",goals.length>0);
+  $("goalList").innerHTML=goals.map(g=>{
+    const percent=Math.min(g.saved/g.target*100,100);
+    return `
+      <div class="card goal-item">
+        <div class="stat-icon icon-green">🎯</div>
+        <h3>${escapeHTML(g.name)}</h3>
+        <p class="card-description">
+          Target amount: ${money(g.target)}
+        </p>
+        <div class="budget-line">
+          <span>${money(g.saved)} saved</span>
+          <strong>${Math.round(percent)}%</strong>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:${percent}%"></div>
+        </div>
+        <p class="card-description">
+          ${g.date?"Target date: "+escapeHTML(g.date):"No target date set"}
+        </p>
+        <button class="small-btn" onclick="updateGoal(${g.id})">
+          Update savings
+        </button>
+        <button class="delete-btn" onclick="deleteGoal(${g.id})">
+          Delete
+        </button>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderAll() {
+  if(!data) return;
+  renderDashboard();
+  renderTransactions();
+  renderBudgetCategories();
+  renderGoals();
+}
+
+if(currentEmail&&users[currentEmail]) {
+  openApp();
+} else {
+  showAuth(true);
+}
+</script>
+</body>
+</html>
